@@ -10,13 +10,14 @@ from langchain.callbacks.base import BaseCallbackHandler
 from langchain.chains import ConversationalRetrievalChain
 from langchain.vectorstores import DocArrayInMemorySearch
 from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_openai import OpenAIEmbeddings
 
 st.set_page_config(page_title="LangChain: Chat with Documents", page_icon="🦜")
 st.title("🦜 LangChain: Chat with Documents")
 
 
 @st.cache_resource(ttl="1h")
-def configure_retriever(uploaded_files):
+def configure_retriever(uploaded_files, openai_api_key):
     # Read documents
     docs = []
     temp_dir = tempfile.TemporaryDirectory()
@@ -32,7 +33,8 @@ def configure_retriever(uploaded_files):
     splits = text_splitter.split_documents(docs)
 
     # Create embeddings and store in vectordb
-    embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
+    # embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
+    embeddings_model = OpenAIEmbeddings(api_key=openai_api_key)
     vectordb = DocArrayInMemorySearch.from_documents(splits, embeddings)
 
     # Define retriever
@@ -87,7 +89,7 @@ if not uploaded_files:
     st.info("Please upload PDF documents to continue.")
     st.stop()
 
-retriever = configure_retriever(uploaded_files)
+retriever = configure_retriever(uploaded_files , openai_api_key)
 
 # Setup memory for contextual conversation
 msgs = StreamlitChatMessageHistory()
