@@ -6,14 +6,13 @@ from langchain.document_loaders import PyPDFLoader
 from langchain.memory import ConversationBufferMemory
 from langchain.memory.chat_message_histories import StreamlitChatMessageHistory
 from langchain.embeddings import HuggingFaceEmbeddings
-from langchain_openai import OpenAIEmbeddings
 from langchain.callbacks.base import BaseCallbackHandler
 from langchain.chains import ConversationalRetrievalChain
 from langchain.vectorstores import DocArrayInMemorySearch
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 
 st.set_page_config(page_title="LangChain: Chat with Documents", page_icon="🦜")
-st.title("🦜 LangChain: Chat with Document")
+st.title("🦜 LangChain: Chat with Documents")
 
 
 @st.cache_resource(ttl="1h")
@@ -29,11 +28,11 @@ def configure_retriever(uploaded_files):
         docs.extend(loader.load())
 
     # Split documents
-    text_splitter = RecursiveCharacterTextSplitter(chunk_size=1500, chunk_overlap=200)
+    text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=100)
     splits = text_splitter.split_documents(docs)
 
     # Create embeddings and store in vectordb
-    embeddings = OpenAIEmbeddings()
+    embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
     vectordb = DocArrayInMemorySearch.from_documents(splits, embeddings)
 
     # Define retriever
