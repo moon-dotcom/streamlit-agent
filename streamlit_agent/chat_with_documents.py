@@ -5,7 +5,7 @@ from langchain.chat_models import ChatOpenAI
 from langchain.document_loaders import PyPDFLoader
 from langchain.memory import ConversationBufferMemory
 from langchain.memory.chat_message_histories import StreamlitChatMessageHistory
-from langchain.embeddings import HuggingFaceEmbeddings
+from langchain.embeddings import HuggingFaceEmbeddings, OpenAIEmbeddings
 from langchain.callbacks.base import BaseCallbackHandler
 from langchain.chains import ConversationalRetrievalChain
 from langchain.vectorstores import DocArrayInMemorySearch
@@ -32,7 +32,7 @@ def configure_retriever(uploaded_files):
     splits = text_splitter.split_documents(docs)
 
     # Create embeddings and store in vectordb
-    embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
+    embeddings = OpenAIEmbeddings()
     vectordb = DocArrayInMemorySearch.from_documents(splits, embeddings)
 
     # Define retriever
